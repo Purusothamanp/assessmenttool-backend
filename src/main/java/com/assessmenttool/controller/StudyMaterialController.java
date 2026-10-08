@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/study-materials")
-@CrossOrigin("*")
 public class StudyMaterialController {
 
     @Autowired
