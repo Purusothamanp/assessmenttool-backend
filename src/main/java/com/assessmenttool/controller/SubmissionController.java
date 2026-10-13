@@ -37,15 +37,34 @@ public class SubmissionController {
     }
 
     @PostMapping
-    public ResponseEntity<Submission> createSubmission(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<?> createSubmission(@RequestBody Map<String, Object> payload) {
+        String studentName = (String) payload.get("studentName");
+        String assessmentId = (String) payload.get("assessmentId");
+
+        // Validate if already assigned to this student
+        if (studentName != null && !studentName.isBlank() && assessmentId != null && !assessmentId.isBlank()) {
+            boolean alreadyExists = submissionRepository.existsByStudentNameIgnoreCaseAndAssessmentId(
+                    studentName.trim(), 
+                    assessmentId.trim()
+            );
+            if (alreadyExists) {
+                Map<String, Object> err = new HashMap<>();
+                err.put("error", "ALREADY_ASSIGNED");
+                err.put("message", "This assessment has already been assigned/sent to " + studentName.trim() + ".");
+                err.put("studentName", studentName.trim());
+                err.put("assessmentId", assessmentId.trim());
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(err);
+            }
+        }
+
         Submission submission = new Submission();
         String id = (String) payload.get("id");
         if (id == null || id.isBlank()) {
             id = UUID.randomUUID().toString().substring(0, 11);
         }
         submission.setId(id);
-        submission.setStudentName((String) payload.get("studentName"));
-        submission.setAssessmentId((String) payload.get("assessmentId"));
+        submission.setStudentName(studentName != null ? studentName.trim() : null);
+        submission.setAssessmentId(assessmentId != null ? assessmentId.trim() : null);
         submission.setAssessmentTitle((String) payload.get("assessmentTitle"));
         
         Object scoreObj = payload.get("score");

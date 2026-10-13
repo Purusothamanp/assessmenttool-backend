@@ -1,7 +1,11 @@
 package com.assessmenttool.model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "study_materials")
@@ -26,6 +30,12 @@ public class StudyMaterial {
     private String uploadedBy;
     private LocalDateTime uploadDate;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String sentStudentIdsJson = "[]";
+
+    @Transient
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     public StudyMaterial() {}
 
     // Constructor without data (for listing)
@@ -37,6 +47,19 @@ public class StudyMaterial {
         this.fileType = fileType;
         this.uploadedBy = uploadedBy;
         this.uploadDate = uploadDate;
+        this.sentStudentIdsJson = "[]";
+    }
+
+    // Constructor with sentStudentIdsJson (for listing with recipients)
+    public StudyMaterial(Long id, String title, String description, String fileName, String fileType, String uploadedBy, LocalDateTime uploadDate, String sentStudentIdsJson) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.fileName = fileName;
+        this.fileType = fileType;
+        this.uploadedBy = uploadedBy;
+        this.uploadDate = uploadDate;
+        this.sentStudentIdsJson = sentStudentIdsJson != null ? sentStudentIdsJson : "[]";
     }
 
     // Getters and Setters
@@ -63,4 +86,26 @@ public class StudyMaterial {
     
     public LocalDateTime getUploadDate() { return uploadDate; }
     public void setUploadDate(LocalDateTime uploadDate) { this.uploadDate = uploadDate; }
+
+    public String getSentStudentIdsJson() { return sentStudentIdsJson; }
+    public void setSentStudentIdsJson(String sentStudentIdsJson) { this.sentStudentIdsJson = sentStudentIdsJson; }
+
+    public List<String> getSentStudentIds() {
+        if (sentStudentIdsJson == null || sentStudentIdsJson.isBlank()) {
+            return new ArrayList<>();
+        }
+        try {
+            return objectMapper.readValue(sentStudentIdsJson, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public void setSentStudentIds(List<String> ids) {
+        try {
+            this.sentStudentIdsJson = objectMapper.writeValueAsString(ids != null ? ids : new ArrayList<>());
+        } catch (Exception e) {
+            this.sentStudentIdsJson = "[]";
+        }
+    }
 }

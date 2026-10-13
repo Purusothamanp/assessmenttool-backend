@@ -12,7 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/study-materials")
@@ -49,6 +52,72 @@ public class StudyMaterialController {
     @GetMapping
     public ResponseEntity<List<StudyMaterial>> getAllMaterials() {
         return ResponseEntity.ok(repository.findAllWithoutData());
+    }
+
+    @PostMapping("/{id}/send")
+    public ResponseEntity<?> sendMaterialToStudents(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> payload) {
+        StudyMaterial material = repository.findById(id).orElse(null);
+        if (material == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Object studentIdsObj = payload.get("studentIds");
+        if (!(studentIdsObj instanceof List)) {
+            Map<String, String> err = new HashMap<>();
+            err.put("error", "INVALID_REQUEST");
+            err.put("message", "studentIds list is required.");
+            return ResponseEntity.badRequest().body(err);
+        }
+
+        List<?> rawIds = (List<?>) studentIdsObj;
+        List<String> targetIds = new ArrayList<>();
+        for (Object item : rawIds) {
+            if (item != null) targetIds.add(item.toString().trim());
+        }
+
+        if (targetIds.isEmpty()) {
+            Map<String, String> err = new HashMap<>();
+            err.put("error", "EMPTY_STUDENTS");
+            err.put("message", "Please select at least one student.");
+            return ResponseEntity.badRequest().body(err);
+        }
+
+        List<String> currentSent = new ArrayList<>(material.getSentStudentIds());
+        List<String> alreadySent = new ArrayList<>();
+        List<String> newlyAdded = new ArrayList<>();
+
+        for (String sId : targetIds) {
+            if (currentSent.contains(sId)) {
+                alreadySent.add(sId);
+            } else {
+                newlyAdded.add(sId);
+            }
+        }
+
+        if (!alreadySent.isEmpty() && newlyAdded.isEmpty()) {
+            Map<String, Object> err = new HashMap<>();
+            err.put("error", "ALREADY_SENT");
+            err.put("message", "This study material has already been sent to all the selected student(s).");
+            err.put("alreadySentStudentIds", alreadySent);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(err);
+        }
+
+        currentSent.addAll(newlyAdded);
+        material.setSentStudentIds(currentSent);
+        repository.save(material);
+
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("message", "Material sent successfully to " + newlyAdded.size() + " student(s).");
+        resp.put("sentCount", newlyAdded.size());
+        resp.put("alreadySentStudentIds", alreadySent);
+        resp.put("sentStudentIds", currentSent);
+        if (!alreadySent.isEmpty()) {
+            resp.put("warning", "Some students had already received this material.");
+        }
+
+        return ResponseEntity.ok(resp);
     }
 
     @GetMapping("/download/{id}")
