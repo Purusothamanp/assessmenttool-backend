@@ -47,6 +47,7 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(new User("admin-demo-1", "Administrator", "admin@gmail.com", passwordEncoder.encode("admin123"), "admin", "active", "2026-09-28 18:00", null, null));
             userRepository.save(new User("educator-demo-1", "Prof. Smith", "educator@gmail.com", passwordEncoder.encode("educator123"), "educator", "active", "2026-09-28 18:00", null, null));
             userRepository.save(new User("student-demo-1", "John Doe", "student@gmail.com", passwordEncoder.encode("student123"), "student", "active", "2026-09-28 18:00", "2004-10-30", "st001"));
+            userRepository.save(new User("0k9bt1ocu", "purusoth", "purusoth@gmail.com", passwordEncoder.encode("password123"), "student", "active", "2026-10-13 20:00", "2004-10-30", "st000"));
             userRepository.save(new User("t5FlZ_iaC0I", "educator2", "educator2@gmail.com", passwordEncoder.encode("educator2@2"), "educator", "active", "2026-06-26 17:05", null, null));
             userRepository.save(new User("G7GWnf_NCCA", "admin2", "admin2@gmail.com", passwordEncoder.encode("admin2@2"), "admin", "active", "2026-06-27 20:23", null, null));
             userRepository.save(new User("xFyioXkLilY", "student1", "student1@gmail.com", passwordEncoder.encode("student1"), "student", "active", "2026-08-20 10:30", "2004-10-30", "st002"));
