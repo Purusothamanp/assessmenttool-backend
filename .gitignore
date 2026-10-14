@@ -6,3 +6,6 @@ target/
 *.war
 .env
 application-local.properties
+*.zip
+apache-maven-*/
+maven-*/

@@ -47,3 +47,16 @@ CREATE TABLE IF NOT EXISTS reports (
     average_score DOUBLE DEFAULT 0.0,
     top_score DOUBLE DEFAULT 0.0
 );
+
+CREATE TABLE IF NOT EXISTS study_materials (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description VARCHAR(1000),
+    file_name VARCHAR(255),
+    file_type VARCHAR(100),
+    data LONGBLOB,
+    uploaded_by VARCHAR(255),
+    upload_date DATETIME,
+    sent_student_ids_json LONGTEXT
+);
+
