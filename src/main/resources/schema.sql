@@ -1,4 +1,4 @@
--- Assessment Tool MySQL Schema (Optional manual run or automated by Spring JPA)
+-- AssessNova - Smart Assessment Management System MySQL Schema (Optional manual run or automated by Spring JPA)
 
 CREATE DATABASE IF NOT EXISTS assessment_db;
 USE assessment_db;

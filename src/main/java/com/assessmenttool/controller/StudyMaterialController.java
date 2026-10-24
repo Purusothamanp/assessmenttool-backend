@@ -32,13 +32,6 @@ public class StudyMaterialController {
             @RequestParam("file") MultipartFile file) {
         
         try {
-            if (file == null || file.isEmpty()) {
-                Map<String, String> err = new HashMap<>();
-                err.put("error", "EMPTY_FILE");
-                err.put("message", "Please select a valid file to upload.");
-                return ResponseEntity.badRequest().body(err);
-            }
-
             StudyMaterial material = new StudyMaterial();
             material.setTitle(title);
             material.setDescription(description);
@@ -49,15 +42,10 @@ public class StudyMaterialController {
             material.setUploadDate(LocalDateTime.now());
             
             repository.save(material);
-            Map<String, Object> resp = new HashMap<>();
-            resp.put("message", "Material uploaded successfully");
-            resp.put("id", material.getId());
-            return ResponseEntity.ok(resp);
-        } catch (Exception e) {
-            Map<String, String> err = new HashMap<>();
-            err.put("error", "UPLOAD_FAILED");
-            err.put("message", "Could not upload file: " + (e.getMessage() != null ? e.getMessage() : "Unknown error"));
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+            return ResponseEntity.ok().body("{\"message\": \"Material uploaded successfully\"}");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"message\": \"Could not upload file\"}");
         }
     }
 

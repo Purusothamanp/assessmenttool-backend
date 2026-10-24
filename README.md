@@ -1,6 +1,6 @@
-# Assessment Tool Backend (Spring Boot + MySQL)
+# AssessNova Backend (Spring Boot + MySQL)
 
-A robust REST API backend for the Assessment Tool built with **Java 21**, **Spring Boot 3**, **Spring Data JPA**, and **MySQL**.
+A robust REST API backend for **AssessNova - Smart Assessment Management System** built with **Java 21**, **Spring Boot 3**, **Spring Data JPA**, and **MySQL**.
 
 ---
 

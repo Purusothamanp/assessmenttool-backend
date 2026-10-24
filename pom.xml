@@ -11,8 +11,8 @@
 	<groupId>com.assessmenttool</groupId>
 	<artifactId>assessmenttool-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>assessmenttool-backend</name>
-	<description>Assessment Tool Backend with Spring Boot and MySQL</description>
+	<name>assessnova-backend</name>
+	<description>AssessNova - Smart Assessment Management System Backend with Spring Boot and MySQL</description>
 
 	<properties>
 		<java.version>21</java.version>
