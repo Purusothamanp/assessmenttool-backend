@@ -50,7 +50,11 @@ public class StudyMaterialController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StudyMaterial>> getAllMaterials() {
+    public ResponseEntity<List<StudyMaterial>> getAllMaterials(
+            @RequestParam(value = "uploadedBy", required = false) String uploadedBy) {
+        if (uploadedBy != null && !uploadedBy.trim().isEmpty()) {
+            return ResponseEntity.ok(repository.findByUploadedByIgnoreCase(uploadedBy.trim()));
+        }
         return ResponseEntity.ok(repository.findAllWithoutData());
     }
 
