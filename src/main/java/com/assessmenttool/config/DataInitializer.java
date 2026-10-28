@@ -110,6 +110,16 @@ public class DataInitializer implements CommandLineRunner {
                     educatorIndex++;
                 }
 
+                // Ensure admin users never have studentId or educatorId
+                if ("admin".equalsIgnoreCase(user.getRole())) {
+                    if (user.getEducatorId() != null || user.getStudentId() != null) {
+                        user.setEducatorId(null);
+                        user.setStudentId(null);
+                        changed = true;
+                        System.out.println("Cleared IDs from admin user: " + user.getName());
+                    }
+                }
+
                 if (changed) {
                     userRepository.save(user);
                 }

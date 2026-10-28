@@ -118,6 +118,12 @@ public class UserController {
             user.setLastLogin(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(LocalDateTime.now()));
         }
 
+        // Admin accounts should never have studentId or educatorId
+        if ("admin".equalsIgnoreCase(user.getRole())) {
+            user.setStudentId(null);
+            user.setEducatorId(null);
+        }
+
         // Generate studentId if role is student and not provided
         if ("student".equalsIgnoreCase(user.getRole()) && (user.getStudentId() == null || user.getStudentId().isBlank())) {
             long count = userRepository.countByRole("student");
@@ -158,8 +164,13 @@ public class UserController {
             }
             if (userDetails.getLastLogin() != null) user.setLastLogin(userDetails.getLastLogin());
             if (userDetails.getDob() != null) user.setDob(userDetails.getDob());
-            if (userDetails.getStudentId() != null) user.setStudentId(userDetails.getStudentId());
-            if (userDetails.getEducatorId() != null) user.setEducatorId(userDetails.getEducatorId());
+            if ("admin".equalsIgnoreCase(user.getRole())) {
+                user.setStudentId(null);
+                user.setEducatorId(null);
+            } else {
+                if (userDetails.getStudentId() != null) user.setStudentId(userDetails.getStudentId());
+                if (userDetails.getEducatorId() != null) user.setEducatorId(userDetails.getEducatorId());
+            }
             return ResponseEntity.ok(userRepository.save(user));
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -179,8 +190,13 @@ public class UserController {
             }
             if (updates.containsKey("lastLogin")) user.setLastLogin((String) updates.get("lastLogin"));
             if (updates.containsKey("dob")) user.setDob((String) updates.get("dob"));
-            if (updates.containsKey("studentId")) user.setStudentId((String) updates.get("studentId"));
-            if (updates.containsKey("educatorId")) user.setEducatorId((String) updates.get("educatorId"));
+            if ("admin".equalsIgnoreCase(user.getRole())) {
+                user.setStudentId(null);
+                user.setEducatorId(null);
+            } else {
+                if (updates.containsKey("studentId")) user.setStudentId((String) updates.get("studentId"));
+                if (updates.containsKey("educatorId")) user.setEducatorId((String) updates.get("educatorId"));
+            }
             return ResponseEntity.ok(userRepository.save(user));
         }).orElse(ResponseEntity.notFound().build());
     }
