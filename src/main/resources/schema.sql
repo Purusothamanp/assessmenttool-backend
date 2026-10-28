@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS users (
     status VARCHAR(50) DEFAULT 'active',
     last_login VARCHAR(100),
     dob VARCHAR(100),
-    student_id VARCHAR(100)
+    student_id VARCHAR(100),
+    educator_id VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS assessments (

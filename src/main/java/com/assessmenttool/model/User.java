@@ -33,10 +33,12 @@ public class User {
 
     private String studentId;
 
+    private String educatorId;
+
     public User() {
     }
 
-    public User(String id, String name, String email, String password, String role, String status, String lastLogin, String dob, String studentId) {
+    public User(String id, String name, String email, String password, String role, String status, String lastLogin, String dob, String studentId, String educatorId) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -46,6 +48,11 @@ public class User {
         this.lastLogin = lastLogin != null ? lastLogin : DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(LocalDateTime.now());
         this.dob = dob;
         this.studentId = studentId;
+        this.educatorId = educatorId;
+    }
+
+    public User(String id, String name, String email, String password, String role, String status, String lastLogin, String dob, String studentId) {
+        this(id, name, email, password, role, status, lastLogin, dob, studentId, null);
     }
 
     public String getId() {
@@ -118,5 +125,13 @@ public class User {
 
     public void setStudentId(String studentId) {
         this.studentId = studentId;
+    }
+
+    public String getEducatorId() {
+        return educatorId;
+    }
+
+    public void setEducatorId(String educatorId) {
+        this.educatorId = educatorId;
     }
 }

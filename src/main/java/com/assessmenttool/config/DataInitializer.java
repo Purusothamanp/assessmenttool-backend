@@ -45,10 +45,10 @@ public class DataInitializer implements CommandLineRunner {
 
             // Default Users
             userRepository.save(new User("admin-demo-1", "Administrator", "admin@gmail.com", passwordEncoder.encode("admin123"), "admin", "active", "2026-09-28 18:00", null, null));
-            userRepository.save(new User("educator-demo-1", "Prof. Smith", "educator@gmail.com", passwordEncoder.encode("educator123"), "educator", "active", "2026-09-28 18:00", null, null));
+            userRepository.save(new User("educator-demo-1", "Prof. Smith", "educator@gmail.com", passwordEncoder.encode("educator123"), "educator", "active", "2026-09-28 18:00", null, null, "ED101"));
             userRepository.save(new User("student-demo-1", "John Doe", "student@gmail.com", passwordEncoder.encode("student123"), "student", "active", "2026-09-28 18:00", "2004-10-30", "st001"));
             userRepository.save(new User("0k9bt1ocu", "purusoth", "purusoth@gmail.com", passwordEncoder.encode("password123"), "student", "active", "2026-10-13 20:00", "2004-10-30", "st000"));
-            userRepository.save(new User("t5FlZ_iaC0I", "educator2", "educator2@gmail.com", passwordEncoder.encode("educator2@2"), "educator", "active", "2026-06-26 17:05", null, null));
+            userRepository.save(new User("t5FlZ_iaC0I", "educator2", "educator2@gmail.com", passwordEncoder.encode("educator2@2"), "educator", "active", "2026-06-26 17:05", null, null, "ED102"));
             userRepository.save(new User("G7GWnf_NCCA", "admin2", "admin2@gmail.com", passwordEncoder.encode("admin2@2"), "admin", "active", "2026-06-27 20:23", null, null));
             userRepository.save(new User("xFyioXkLilY", "student1", "student1@gmail.com", passwordEncoder.encode("student1"), "student", "active", "2026-08-20 10:30", "2004-10-30", "st002"));
             userRepository.save(new User("c-nCk7aGpBc", "student2", "student2@gmail.com", passwordEncoder.encode("student2"), "student", "active", "2026-04-19 12:39", "2004-10-30", "st003"));
@@ -85,15 +85,33 @@ public class DataInitializer implements CommandLineRunner {
 
             System.out.println("Default records successfully inserted into MySQL.");
         } else {
-            // Automatic migration for existing plain text passwords in the database
+            // Automatic migration for existing plain text passwords and missing educator IDs
             List<User> existingUsers = userRepository.findAll();
             int migratedCount = 0;
+            int educatorIndex = 101;
             for (User user : existingUsers) {
+                boolean changed = false;
+
+                // Check password hash
                 String pwd = user.getPassword();
                 if (pwd != null && !pwd.isBlank() && !pwd.startsWith("$2a$") && !pwd.startsWith("$2b$") && !pwd.startsWith("$2y$")) {
                     user.setPassword(passwordEncoder.encode(pwd));
-                    userRepository.save(user);
+                    changed = true;
                     migratedCount++;
+                }
+
+                // Check educator ID for existing educators
+                if ("educator".equalsIgnoreCase(user.getRole())) {
+                    if (user.getEducatorId() == null || user.getEducatorId().isBlank()) {
+                        user.setEducatorId(String.format("ED%03d", educatorIndex));
+                        changed = true;
+                        System.out.println("Assigned " + user.getEducatorId() + " to existing educator: " + user.getName());
+                    }
+                    educatorIndex++;
+                }
+
+                if (changed) {
+                    userRepository.save(user);
                 }
             }
             if (migratedCount > 0) {

@@ -81,6 +81,7 @@ public class UserController {
         response.put("lastLogin", user.getLastLogin());
         response.put("dob", user.getDob());
         response.put("studentId", user.getStudentId());
+        response.put("educatorId", user.getEducatorId());
         response.put("token", "token-" + user.getId());
 
         return ResponseEntity.ok(response);
@@ -123,6 +124,12 @@ public class UserController {
             user.setStudentId(String.format("st%03d", count + 1));
         }
 
+        // Generate educatorId if role is educator and not provided
+        if ("educator".equalsIgnoreCase(user.getRole()) && (user.getEducatorId() == null || user.getEducatorId().isBlank())) {
+            long count = userRepository.countByRole("educator");
+            user.setEducatorId(String.format("ED%03d", count + 101));
+        }
+
         // Hash password with BCrypt
         if (user.getPassword() != null && !user.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -152,6 +159,7 @@ public class UserController {
             if (userDetails.getLastLogin() != null) user.setLastLogin(userDetails.getLastLogin());
             if (userDetails.getDob() != null) user.setDob(userDetails.getDob());
             if (userDetails.getStudentId() != null) user.setStudentId(userDetails.getStudentId());
+            if (userDetails.getEducatorId() != null) user.setEducatorId(userDetails.getEducatorId());
             return ResponseEntity.ok(userRepository.save(user));
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -172,6 +180,7 @@ public class UserController {
             if (updates.containsKey("lastLogin")) user.setLastLogin((String) updates.get("lastLogin"));
             if (updates.containsKey("dob")) user.setDob((String) updates.get("dob"));
             if (updates.containsKey("studentId")) user.setStudentId((String) updates.get("studentId"));
+            if (updates.containsKey("educatorId")) user.setEducatorId((String) updates.get("educatorId"));
             return ResponseEntity.ok(userRepository.save(user));
         }).orElse(ResponseEntity.notFound().build());
     }
